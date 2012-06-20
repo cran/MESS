@@ -1,0 +1,13 @@
+0a0658df2d6d71ed18905437e0ecb8fd *DESCRIPTION
+8b54e5a89fbda3af5e077053d40bec76 *NAMESPACE
+f89009c8548eb656eb263bcc6eba4e75 *R/auc.R
+dc19ec28ccfb7035ea67f07530914e27 *R/drop1.geeglm.R
+52261e9afad734e0229cef6d864eac38 *R/lower.tri.vector.R
+bece0fa7125e287e5c278c04fc5032b5 *R/ordered.clusters.R
+ca9396ebe5aba7cb0126415c3fe27efa *R/wallyplot.R
+50f455e614cb214aa7fd080b62b65086 *man/MESS-package.Rd
+b74133f5d2337241ca173d1694019c5f *man/auc.Rd
+4cb3f0e55bd22426d562f2c0a84ed0de *man/drop1.geeglm.Rd
+7b137e9a6c09b64d77f532167afde302 *man/lower.tri.vector.Rd
+0a2606e28fc49935e5e02170f3c712fc *man/ordered.clusters.Rd
+72b50a795a8ed0e86e1d318b62b067e5 *man/wallyplot.Rd
