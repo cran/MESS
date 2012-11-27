@@ -57,14 +57,16 @@ wallyplot <- function(x, y=x,
   pos <- c(1:4,9,5:8)
   if (hide)
     pos <- sample(pos)
-  layout(matrix(pos, 3, 3))
+  
+  # layout(matrix(pos, 3, 3))
+  par(mfrow=c(3,3))
   
   newy <- matrix(c(rnorm(length(x)*8), y), ncol=9)
   
-  for (i in 1:9) {
+  for (i in 1:length(pos)) {
     switch(type,
-           residualplot = resplot(x, newy[,i], ylim=range(newy), candy=candy),
-           qqnorm = qqnorm(newy[,i], ylim=range(newy), main=""))
+           residualplot = resplot(x, newy[,pos[i]], ylim=range(newy), candy=candy),
+           qqnorm = qqnorm(newy[,pos[i]], ylim=range(newy), main=""))
     if (type=="qqnorm" & candy) {
       abline(a=0,b=1)
     }
@@ -74,6 +76,8 @@ wallyplot <- function(x, y=x,
     readline("Hit <Enter> to show the original residual plot. ")
   }
 
+  figpos <- order(pos)[9]
+  par(mfg=c(figpos %/% 3.1 + 1, figpos - (figpos %/% 3.1)*3 ))
   box(col="red", lwd=2)
 
   par(oldpar)

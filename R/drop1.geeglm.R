@@ -40,7 +40,7 @@ drop1.geeglm <- function(object, scope, test = c("Wald", "none"),
                      )
     score[i] <- as.numeric(param %*% solve(varmat) %*% param)
     dfs[i] <- length(ii)
-    pvals[i] <- pchisq(score[i], df=dfs[i])
+    pvals[i] <- pchisq(score[i], df=dfs[i], lower.tail=FALSE)
   }
 
   aod <- data.frame(DF=dfs, Wald=score, row.names=scope)

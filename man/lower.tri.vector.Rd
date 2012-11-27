@@ -5,13 +5,13 @@
 Split a matrix into block diagonal sub matrices according to clusters and combine the lower triangular parts into a vector
 }
 \usage{
-lower.tri.vector(x, diag = FALSE, cluster = rep(1, nrow(x)))
+lower.tri.vector(x, cluster = rep(1, nrow(x)), diag = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{a square matrix}
-  \item{diag}{logical. Should the diagonal be included?}
   \item{cluster}{numeric or factor. Is used to identify the sub-matrices of \code{x} from which the lower triangular parts are extracted. Defaults to the full matrix.}
+  \item{diag}{logical. Should the diagonal be included?}
 }
 %\details{
 %%  ~~ If necessary, more details than the description above ~~

@@ -1,4 +1,4 @@
-lower.tri.vector <- function(x, diag = FALSE, cluster=rep(1,nrow(x))) {
+lower.tri.vector <- function(x, cluster=rep(1,nrow(x)), diag = FALSE) {
 
   if (!is.matrix(x) & nrow(x) != ncol(x))
     stop("Input must be a square matrix")
@@ -12,8 +12,8 @@ lower.tri.vector <- function(x, diag = FALSE, cluster=rep(1,nrow(x))) {
     stop("the cluster elements should be in contiguous blocks")
     
   unlist(lapply(unique(cluster), 
-         function(id) { sel <- id==cluster ;
-                        m <- x[sel,sel] ; 
+         function(id) { sel <- (id==cluster) ;
+                        m <- x[sel,sel] ;
                         as.vector(m[lower.tri(m, diag=diag)])
                       }
          )
