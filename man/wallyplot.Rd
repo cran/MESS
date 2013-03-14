@@ -1,5 +1,7 @@
 \name{wallyplot}
 \alias{wallyplot}
+\alias{wallyplot.lm}
+\alias{wallyplot.default}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Plots a Wally plot}
 \description{
@@ -8,46 +10,40 @@
   the remaining are plots that fulfill the assumptions of the linear model
 }
 \usage{
-wallyplot(x, y = x, type = c("residualplot", "qqnorm"), 
-          hide = TRUE, candy = TRUE, mar = c(4, 4, 0.1, 0.1) + 0.1)
+\method{wallyplot}{lm}(x, y = x, FUN = residualplot, hide = TRUE,
+                       simulateFunction = rnorm, ...)
+\method{wallyplot}{lm}(x, y = x, FUN = residualplot, hide = TRUE,
+                       simulateFunction = rnorm, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{a numeric vector of x values, or an lm object.}
-  \item{y}{a numeric vector of y values of the same length as x.}
-  \item{type}{either the character string "residualplot" (the default)
-    or "qqnorm". This determines the type of plot that is produced.
-}
+  \item{y}{a numeric vector of y values of the same length as x or a n * 9 matrix of y values - one column for each of the nine plots to make. The first column is the one corresponding to the results from the dataset}
+  \item{FUN}{a function that accepts an \code{x}, \code{y} and \code{...} argument and produces a graphical model validation plots from the \code{x} and \code{y} values.}
 \item{hide}{
   logical; if \code{TRUE} (the default) then the identity of the true
   residual plot is hidden until the user presses a key. If \code{FALSE}
-  then the true residual plot is shown in the center.
+  then the true residual plot is shown in the center.}
+  \item{simulateFunction}{The function used to produce y values under the null hypothesis. Defaults to rnorm
 }
-\item{candy}{
-  logical; if \code{TRUE} (the default) then local pointwise 95\% prediction
-  intervals are added to the residual plots, and the identity line is
-  added to the qqnorm plots.
-}
-\item{mar}{A numerical vector of the form `c(bottom, left, top, right)'
-          which gives the number of lines of margin to be passed on to
-	  the par function
-}
+  \item{...}{Other arguments passed to the plot function \code{FUN}}
 }
 \details{
-  User who look at residual plots or qqnorm plots for the first times
+  Users who look at residual plots or qqnorm plots for the first time
   often feel they lack the experience to determine if the residual plot
   is okay or if the model assumptions are indeed violated. One way to
-  convey "experience" is to plot a series of residual- or qq-plots and
-  see if the user can pinpoint one of them that looks like an
-  odd-one-out. If the proper residual plot does not stand out then the
+  convey "experience" is to plot a series of graphical model validation 
+ plots simulated under the model assumption together with the corresponding plot from the real data and see if the user can pinpoint one of them that looks like an
+  odd-one-out. If the proper plot from the real data  does not stand out then the
   assumptions are not likely to be violated.
   
-  The wallyplot produces a 3x3 grid of residual- or qq-plots plots from
-  a lm object or from a set of pairs of x and y values. One of the nine
-  subfigures is the true residual plot/qqplot while the remaining are
+  The Wallyplot produces a 3x3 grid of plots from a lm object or from a set of pairs of x and y values. One of the nine
+  subfigures is the true plot  while the remaining are
   plots that fulfill the assumptions of the linear model. After the user
   interactively hits a key the correct residual plot (correponding to
   the provided data) is shown.
+
+  The plotting function can be set using the \code{FUN} argument which should be a function that accepts \code{x}, \code{y} and \code{...} arguments and plots the desired figure. When \code{y} is a single vector the same length as \code{x} then the function \code{simulateFunction} is used to generate the remaining y values corresponding the situations under the null.
 }
 %\value{
 %  The plot produced is the what is returned
@@ -69,8 +65,24 @@ Claus Ekstrom \email{claus@rprimer.dk}
 %}
 \examples{
 data(trees)
-model <- lm(Volume ~ Height + Girth, data=trees)
-wallyplot(model)
+res <- lm(Volume ~ Height + Girth, data=trees)
+wallyplot(res)
+
+
+# Create a grid of QQ-plot figures
+# Define function to plot a qq plot with an identity line
+qqwrap <- function(x, y, ...) {qqnorm(y, ...) ; abline(a=0, b=1)}
+wallyplot(res, FUN=qqwrap)
+
+# Define function to simulate components+residuals for Girth
+cprsimulate <- function(n) {rnorm(n)+trees$Girth}
+# Create the cpr plotting function
+cprplot <- function(x, y, ...) {plot(x, y, pch=20, ...) ; 
+                                 lines(lowess(x, y), lty=3)}
+# Create the Wallyplot
+wallyplot(trees$Girth, trees$Girth+rstudent(res), FUN=cprplot, 
+          simulateFunction=cprsimulate, xlab="Girth")
+
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

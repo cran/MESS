@@ -1,1 +1,7 @@
-exportPattern("^[[:alpha:]]+")
+export(auc, cmd, common.shared, drop1.geeglm, lower.tri.vector, ordered.clusters, rootonorm)
+
+exportPattern("common\\.shared.*")
+exportPattern("residualplot.*")
+exportPattern("QIC.*")
+exportPattern("wallyplot.*")
+
