@@ -11,8 +11,7 @@ function(x, y, from = min(x), to = max(x), type=c("linear", "spline"), ...)
     if (type=="linear") {    
       values <- approx(x, y, xout = sort(unique(c(from, to, x[x > from & x < to]))), ...)
       res <- 0.5 * sum(diff(values$x) * (values$y[-1] + values$y[-length(values$y)]))
-    }
-    else {
+    } else {
       res <- integrate(splinefun(x, y, method="natural"), lower=from, upper=to)$value
     }
     res

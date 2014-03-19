@@ -10,7 +10,7 @@
   the remaining are plots that fulfill the assumptions of the linear model
 }
 \usage{
-\method{wallyplot}{lm}(x, y = x, FUN = residualplot, hide = TRUE,
+\method{wallyplot}{default}(x, y = x, FUN = residualplot, hide = TRUE,
                        simulateFunction = rnorm, ...)
 \method{wallyplot}{lm}(x, y = x, FUN = residualplot, hide = TRUE,
                        simulateFunction = rnorm, ...)
@@ -49,20 +49,12 @@
 %  The plot produced is the what is returned
 %}
 \references{
-www.rprimer.dk
+Ekstrom, CT (2014) \emph{Teaching 'Instant Experience' with Graphical
+Model Validation Techniques}. Teaching Statistics (36), p 23-26
 }
 \author{
 Claus Ekstrom \email{claus@rprimer.dk}
 }
-%\note{
-%%  ~~further notes~~
-%}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-%\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-%}
 \examples{
 data(trees)
 res <- lm(Volume ~ Height + Girth, data=trees)
@@ -71,8 +63,8 @@ wallyplot(res)
 
 # Create a grid of QQ-plot figures
 # Define function to plot a qq plot with an identity line
-qqwrap <- function(x, y, ...) {qqnorm(y, ...) ; abline(a=0, b=1)}
-wallyplot(res, FUN=qqwrap)
+qqnorm.wally <- function(x, y, ...) { qqnorm(y, ...) ; abline(a=0, b=1) }
+wallyplot(res, FUN=qqnorm.wally, main="")
 
 # Define function to simulate components+residuals for Girth
 cprsimulate <- function(n) {rnorm(n)+trees$Girth}

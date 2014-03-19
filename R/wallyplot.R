@@ -40,7 +40,7 @@ wallyplot.lm <- function(x, y=x, FUN=residualplot,
   y <- rstandard(x)
   x <- predict(x)
 
-  wallyplot.default(x, y, FUN=FUN, hide=hide, simulateFunction=simulateFunction)
+  wallyplot.default(x, y, FUN=FUN, hide=hide, simulateFunction=simulateFunction, ...)
 }
 
 
@@ -51,6 +51,8 @@ wallyplot <- function(x, y=x, FUN=residualplot,
   UseMethod("wallyplot")
 }
 
+
+# qqnorm.wally <- function(x, y, ...) {qqnorm(y, ...) ; abline(a=0, b=1)}
 
 
 plot3x3 <- function(x, y, FUN=plot, hide=TRUE, ylim=range(y), mar=c(4, 4, .1, .1)+.1, ...) {

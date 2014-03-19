@@ -23,8 +23,7 @@ rootonorm <- function(x, breaks="Sturges",
     if (missing(ylab)) {
       ylab <- "Frequency"
     }
-  }
-  else {
+  } else {
     scale <- match.fun(scale)
   } 
 
@@ -62,8 +61,7 @@ rootonorm <- function(x, breaks="Sturges",
       rect(h$breaks[i]+d.gap, scale(expected[i])-scale(h$counts[i]),
            h$breaks[i+1]-d.gap, 0, col=rectcol)
     }    
-  }
-  else {
+  } else {
     for(i in 1:nbins) {
       rect(h$breaks[i]+d.gap, scale(expected[i])-scale(h$counts[i]),
            h$breaks[i+1]-d.gap, scale(expected[i]), col=rectcol)

@@ -1,7 +1,17 @@
-export(auc, cmd, common.shared, drop1.geeglm, lower.tri.vector, ordered.clusters, rootonorm)
+export(auc, cmd, common.shared, drop1.geeglm, lower.tri.vector, ordered.clusters, rootonorm, geekin)
 
+exportPattern("print.geekin")
 exportPattern("common\\.shared.*")
 exportPattern("residualplot.*")
 exportPattern("QIC.*")
 exportPattern("wallyplot.*")
+exportPattern("segregate.genes")
+exportPattern("rmvtnorm.pedigree")
+exportPattern("rmvt.pedigree")
+exportPattern("feature.test")
 
+import(geepack)
+
+importFrom(mvtnorm, rmvnorm, rmvt)
+
+importFrom(kinship2, kinship)

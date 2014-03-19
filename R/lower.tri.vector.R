@@ -14,7 +14,9 @@ lower.tri.vector <- function(x, cluster=rep(1,nrow(x)), diag = FALSE) {
   unlist(lapply(unique(cluster), 
          function(id) { sel <- (id==cluster) ;
                         m <- x[sel,sel] ;
-                        as.vector(m[lower.tri(m, diag=diag)])
+                        # as.vector(m[lower.tri(m, diag=diag)])
+                        # Use this solution which works with sparse matrices
+                        as.vector(m[which(lower.tri(m, diag=diag)==TRUE,arr.ind=TRUE)])
                       }
          )
   )

@@ -6,6 +6,10 @@ common.shared <- function (id, ...)
 
 common.shared.pedigreeList <- function (id, ...) 
 {
+    if (!require("Matrix")) { 
+        stop("suggested package Matrix not installed") 
+    } 
+    
     famlist <- unique(id$famid)
     nfam <- length(famlist)
     matlist <- vector("list", nfam)
@@ -16,10 +20,10 @@ common.shared.pedigreeList <- function (id, ...)
     }
     result <- bdiag(matlist)
     
-    if (any(duplicated(id$id))) 
+    if (any(duplicated(id$id))) {
       dimnames(result) <- list(NULL, paste(id$famid, id$id, 
                                            sep = "/"))
-    else dimnames(result) <- list(id$id, id$id)
+    } else { dimnames(result) <- list(id$id, id$id) }
     result
 }
 

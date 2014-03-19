@@ -1,16 +1,18 @@
 \name{QIC}
 \alias{QIC}
 \alias{QIC.geeglm}
+\alias{QIC.geekin}
 \title{
 Quasi Information Criterion
 }
 \description{
 Function for calculating the quasi-likelihood under the independence model
 information criterion (QIC),  quasi-likelihood, correlation information 
-criterion (CIC) for one or several fitted geeglm model object from the geepack package.
+criterion (CIC), and corrected QIC for one or several fitted geeglm model object from the geepack package.
 }
 \usage{
 \method{QIC}{geeglm}(object, ...)
+\method{QIC}{geekin}(object, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -27,19 +29,19 @@ been suggested as a more robust alternative to QIC when the model for
 the mean may not fit the data very well and when models with different
 correlation structures are compared.
 
-Models with smaller values of QIC, CIC, or QICu are preferred.
+Models with smaller values of QIC, CIC, QICu, or QICC are preferred.
 
 If the MASS package is loaded then the \code{\link{ginv}} function is
 used for matrix inversion. Otherwise the standard \code{\link{solve}}
 function is used.
 }
 \value{
-A vector or matrix with the QIC, QICu, quasi likelihood, CIC and the number of mean effect parameters for each 
+A vector or matrix with the QIC, QICu, quasi likelihood, CIC, the number of mean effect parameters, and the corrected QIC for each 
 GEE object
 }
 \references{
 Pan, W. (2001). \emph{Akaike's information criterion in generalized estimating equations}. Biometrics, 57, 120-125.\cr
-Hardin, J.W. and Hilbe, J.M. (2003). \emph{Generalized Estimating Equations}, Chapman and Hall/CRC: New York. \cr
+Hardin, J.W. and Hilbe, J.M. (2012). \emph{Generalized Estimating Equations, 2nd Edition}, Chapman and Hall/CRC: New York. \cr
 Hin, L.-Y. and Wang, Y-G. (2009). \emph{Working-correlation-structure identification in generalized estimating 
  equations}, Statistics in Medicine 28: 642-658. \cr
 Thall, P.F. and Vail, S.C. (1990). \emph{Some Covariance Models for Longitudinal Count Data with Overdispersion}.
