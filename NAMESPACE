@@ -9,9 +9,15 @@ exportPattern("segregate.genes")
 exportPattern("rmvtnorm.pedigree")
 exportPattern("rmvt.pedigree")
 exportPattern("feature.test")
+exportPattern("power*")
+exportPattern("gkgamma")
+exportPattern("desctable.*")
+exportPattern("adaptive.weights")
 
 import(geepack)
+import(glmnet)
+import(Matrix)
 
+importFrom(parallel, mclapply, detectCores)
 importFrom(mvtnorm, rmvnorm, rmvt)
-
 importFrom(kinship2, kinship)

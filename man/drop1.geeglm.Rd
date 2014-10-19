@@ -5,7 +5,7 @@
 Compute all the single terms in the scope argument that can dropped from the model, and compute a table of the corresponding Wald test statistics.
 }
 \usage{
-\method{drop1}{geeglm}(object, scope, test = c("Wald", "none"), 
+\method{drop1}{geeglm}(object, scope, test = c("Wald", "none", "score", "sasscore"), 
 method = c("robust", "naive", "sandwich"), ...)
 }
 %- maybe also 'usage' for other objects documented here.

@@ -26,6 +26,7 @@ fitted.geese <- function(object, ...) {
 
 
     fitted.values <- family(value)$linkinv(value$linear.predictors)
-    
+
+    fitted.values
 
 }

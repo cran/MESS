@@ -2,6 +2,7 @@
 \alias{QIC}
 \alias{QIC.geeglm}
 \alias{QIC.geekin}
+\alias{QIC.ordgee}
 \title{
 Quasi Information Criterion
 }
@@ -13,6 +14,7 @@ criterion (CIC), and corrected QIC for one or several fitted geeglm model object
 \usage{
 \method{QIC}{geeglm}(object, ...)
 \method{QIC}{geekin}(object, ...)
+\method{QIC}{ordgee}(object, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

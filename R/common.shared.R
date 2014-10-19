@@ -6,9 +6,9 @@ common.shared <- function (id, ...)
 
 common.shared.pedigreeList <- function (id, ...) 
 {
-    if (!require("Matrix")) { 
-        stop("suggested package Matrix not installed") 
-    } 
+#    if (!require("Matrix")) { 
+#        stop("suggested package Matrix not installed") 
+#    } 
     
     famlist <- unique(id$famid)
     nfam <- length(famlist)

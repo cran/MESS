@@ -61,7 +61,7 @@ QIC.geeglm <- function(object, ...) {
 
     # Check same data size
     check <- sapply(list(object, ...), function(x) {
-      n <- length(x$y)
+      length(x$y)
     })
 
     if (any(check != check[1]))
@@ -79,6 +79,92 @@ QIC.geeglm <- function(object, ...) {
     computeqic(object)
   } 
 }
+
+
+
+
+QIC.ordgee <- function(object, ...) {
+
+  #
+  # The majority of this code was taken from the internet
+  # I added a bit of functionality and made the whole interface smoother
+
+  if (! ("geeglm" %in% class(object)) ) {
+    stop("QIC requires a geeglm object as input")
+  }
+
+  # Setup functions
+  invert <- if ("MASS" %in% loadedNamespaces()) {
+    MASS::ginv
+  } else { solve }
+ 
+  # Missing:
+  # Check correct handling of link and family functions
+
+  # Create function to make the computations
+  computeqic <- function(object) {
+    # Fitted and observed values for quasi likelihood
+    mu <- object$fitted.values
+    y  <- object$y
+
+    # Quasi Likelihood for Poisson
+    # quasi.R <- sum((y*log(mu.R)) - mu.R) # poisson()$dev.resids - scale and weights = 1
+    type <- family(object)$family
+    quasi <- switch(type,
+                    poisson = sum((y*log(mu)) - mu),
+                    gaussian = sum(((y - mu)^2)/-2),
+                    binomial = sum(y*log(mu/(1 - mu)) + log(1 - mu)),
+                    Gamma = sum(-y/(mu - log(mu))),
+                    stop("Error: distribution not recognized"))  
+
+    # Fit model with independence correlation structure
+    object$call$corstr <- "independence"
+    object$call$zcor <- NULL
+    model.indep <- eval(object, parent.frame())
+    # model.indep <- update(object, corstr="independence",zcorr=NULL)
+  
+    # Trace term (penalty for model complexity)
+    AIinverse <- invert(model.indep$geese$vbeta.naiv) 
+    Vr <- object$geese$vbeta
+    trace <- sum(diag(AIinverse %*% Vr))
+    params <- length(coef(object)) # Mean parameters in the model
+
+    kpm <- params+length(object$geese$alpha)
+    
+    # QIC
+    QIC <- -2*(quasi - trace)
+    QICu <- -2*(quasi - params)
+    QICC <- QIC + (2*kpm*(kpm+1))/(length(object$residuals)-kpm-1)
+    output <- c(QIC, QICu, quasi, trace, params, QICC)
+    names(output) <- c("QIC", "QICu", "Quasi Lik", "CIC", "params", "QICC")
+    output 
+  }
+
+  if (length(list(...))) {
+    # Make the computations
+    results <- lapply(list(object, ...), computeqic)
+
+    # Check same data size
+    check <- sapply(list(object, ...), function(x) {
+      length(x$y)
+    })
+
+    if (any(check != check[1]))
+      warning("models are not all fitted to the same number of observations")
+
+    # Merge the results together in a data.matrix
+    res <- do.call("rbind", results)
+
+    # Set the row names corresponding to the models
+    Call <- match.call()
+    Call$k <- NULL
+    row.names(res) <- as.character(Call[-1L])
+    res
+  } else {
+    computeqic(object)
+  } 
+}
+
 
 
 ## QIC.binomial <- function(object, ...) {
