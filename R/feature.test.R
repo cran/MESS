@@ -1,3 +1,66 @@
+#' Inference for features identified by the Lasso
+#'
+#' Performs randomization tests of features identified by the Lasso
+#'
+#'
+#' @param x input matrix, of dimension nobs x nvars; each row is an observation
+#' vector.
+#' @param y quantitative response variable of length nobs
+#' @param B The number of randomizations used in the computations
+#' @param type.measure loss to use for cross-validation. See \code{cv.glmnet}
+#' for more information
+#' @param s Value of the penalty parameter 'lambda' at which predictions are
+#' required. Default is the entire sequence used to create the model. See
+#' \code{coef.glmnet} for more information
+#' @param keeplambda If set to \code{TRUE} then the estimated lambda from cross
+#' validation from the original dataset is kept and used for evaluation in the
+#' subsequent randomization datasets. This reduces computation time
+#' substantially as it is not necessary to perform cross validation for each
+#' randomization. If set to a value then that value is used for the value of
+#' lambda. Defaults to \code{FALSE}
+#' @param olsestimates Logical. Should the test statistic be based on OLS
+#' estimates from the model based on the variables selected by the lasso.
+#' Defaults to \code{TRUE}. If set to \code{FALSE} then the coefficients from
+#' the lasso is used as test statistics.
+#' @param penalty.factor a vector of weights used for adaptive lasso. See
+#' \code{glmnet} for more information.
+#' @param alpha The elasticnet mixing parameter. See \code{glmnet} for more
+#' information.
+#' @param control A list of options that control the algorithm. Currently
+#' \code{trace} is a logical and if set to \code{TRUE} then the function
+#' produces more output. \code{maxcores} sets the maximum number of cores to
+#' use with the \code{parallel} package
+#' @param \dots Other arguments passed to \code{glmnet}
+#' @return Returns a list of 7 variables: \item{p.full }{The p-value for the
+#' test of the full set of variables selected by the lasso (based on the OLS
+#' estimates)} \item{ols.selected }{A vector of the indices of the non-zero
+#' variables selected by \code{glmnet} sorted from (numerically) highest to
+#' lowest based on their ols test statistic.} \item{p.maxols }{The p-value for
+#' the maximum of the OLS test statistics} \item{lasso.selected }{A vector of
+#' the indices of the non-zero variables selected by \code{glmnet} sorted from
+#' (numerically) highest to lowest based on their absolute lasso coefficients.}
+#' \item{p.maxlasso }{The p-value for the maximum of the lasso test statistics}
+#' \item{lambda.orig }{The value of lambda used in the computations} \item{B
+#' }{The number of permutations used}
+#' @author Claus Ekstrom \email{ekstrom@@sund.ku.dk} and Kasper Brink-Jensen
+#' \email{kbrink@@life.ku.dk}
+#' @seealso \code{glmnet}
+#' @references Brink-Jensen, K and Ekstrom, CT 2014. \emph{Inference for
+#' feature selection using the Lasso with high-dimensional data}.
+#' \url{http://arxiv.org/abs/1403.4296}
+#' @keywords ~htests
+#' @examples
+#'
+#'
+#' # Simulate some data
+#' x <- matrix(rnorm(30*100), nrow=30)
+#' y <- rnorm(30, mean=1*x[,1])
+#'
+#' # Make inference for features
+#' \dontrun{feature.test(x, y)}
+#'
+#'
+#' @export feature.test
 feature.test <- function(x, y, B=100,
                          type.measure="deviance", s="lambda.min",
                          keeplambda=FALSE,
@@ -12,8 +75,8 @@ feature.test <- function(x, y, B=100,
     # Suppress warnings while running
     warn <- options()$warn
     options(warn=-1)
-    
-    
+
+
     # Parse the control options
     con <- list(trace=FALSE)
     con[names(control)] <- control
@@ -33,15 +96,15 @@ feature.test <- function(x, y, B=100,
 
     # Do we need to estimate lambda?
     if (!sfixed) {
-        o <- cv.glmnet(x, y, standardize=FALSE, type.measure=type.measure, penalty.factor=penalty.factor, ..., grouped=FALSE, pmax = min(nobs-1, nvars))
+        o <- glmnet::cv.glmnet(x, y, standardize=FALSE, type.measure=type.measure, penalty.factor=penalty.factor, ..., grouped=FALSE, pmax = min(nobs-1, nvars))
         lambda <- as.numeric(o[s])
     } else {
         lambda <- s
-        keeplambda <- TRUE       
+        keeplambda <- TRUE
     }
-    
+
     # We assume that the intercept is automatically in the model
-    o <- glmnet(x, y, standardize=FALSE, penalty.factor=penalty.factor, ..., pmax = min(nobs-1, nvars))
+    o <- glmnet::glmnet(x, y, standardize=FALSE, penalty.factor=penalty.factor, ..., pmax = min(nobs-1, nvars))
     # Compute the deviance explained (using linear interpolation)
 #    o.devexp <- approx(o$lambda, o$dev.ratio, lambda)$y
 
@@ -56,7 +119,7 @@ feature.test <- function(x, y, B=100,
 #    o.lasso.order <- order(abs(o.non.zero), decreasing=TRUE)
 #    o.lasso.coef <- abs(o.coef.lasso[o.lasso.order])
 
-    
+
     # Compute ols estimates (if we found something)
     if (o.nselected>0) {
         o.lm <- lm(y ~ x[,o.select])
@@ -85,7 +148,7 @@ feature.test <- function(x, y, B=100,
 
 
 #    print(o.fullp)
-    
+
 #    cat("Lasso results\n")
 #    cat("  Selected:\n ")
 #    print(o.select)
@@ -109,18 +172,18 @@ feature.test <- function(x, y, B=100,
 
     # Run the simulations under the NULL
     if (o.nselected > 0) {
-        simnull <- mclapply(1:B, function(iii) {
+        simnull <- parallel::mclapply(1:B, function(iii) {
 
             py <- sample(y)
             cat(".")
 
             if (!keeplambda) {
-                to <- cv.glmnet(x, py, standardize=FALSE, type.measure=type.measure, penalty.factor=penalty.factor, ..., pmax = min(nobs-1, nvars), grouped=FALSE)
+                to <- glmnet::cv.glmnet(x, py, standardize=FALSE, type.measure=type.measure, penalty.factor=penalty.factor, ..., pmax = min(nobs-1, nvars), grouped=FALSE)
                 lambda <- as.numeric(to[s])
             }
 
             # We assume that the intercept is automatically in the model
-            to <- glmnet(x, py, standardize=FALSE, penalty.factor=penalty.factor, ..., pmax = min(nobs-1, nvars))
+            to <- glmnet::glmnet(x, py, standardize=FALSE, penalty.factor=penalty.factor, ..., pmax = min(nobs-1, nvars))
             # Compute the deviance explained (using linear interpolation)
 #            to.devexp <- approx(to$lambda, to$dev.ratio, lambda)$y
 
@@ -181,20 +244,20 @@ feature.test <- function(x, y, B=100,
 
 #            print(c(to.lasso.max, to.ols.max, to.fullp))
             c(to.lasso.max, to.ols.max, to.fullp)
-            
-        }, mc.cores=min(detectCores(), control$maxcores)  )
+
+        }, mc.cores=min(parallel::detectCores(), control$maxcores)  )
 
         # Make the summary statistics and evaluate
         dist.lasso <- sapply(simnull, function(i) {i[[1]]})
-        dist.ols   <- sapply(simnull, function(i) {i[[2]]})        
+        dist.ols   <- sapply(simnull, function(i) {i[[2]]})
         dist.fullp <- sapply(simnull, function(i) {i[[3]]})
 
         p.maxlasso <- sum(dist.lasso >= o.lasso.max)/B
         p.maxols   <- sum(dist.ols >= o.ols.max)/B
         p.full     <- sum(dist.fullp >= o.fullp)/B
 
-        
-        
+
+
     } else {
         # None selected from the original data
 
@@ -202,21 +265,21 @@ feature.test <- function(x, y, B=100,
         p.maxols   <- NA
         p.full     <- NA
 
-        
+
     }
-    
+
 
     options(warn=warn)
-    
+
     list(
         p.full=p.full,
         ols.selected=o.select[o.ols.order],
         p.maxols=p.maxols,
-        lasso.selected=o.select[o.lasso.torder],            
+        lasso.selected=o.select[o.lasso.torder],
         p.maxlasso=p.maxlasso,
         lambda.orig=lambda,
         B=B)
-    
+
 }
 
 

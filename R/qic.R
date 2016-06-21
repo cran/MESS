@@ -1,3 +1,50 @@
+#' Quasi Information Criterion
+#'
+#' Function for calculating the quasi-likelihood under the independence model
+#' information criterion (QIC), quasi-likelihood, correlation information
+#' criterion (CIC), and corrected QIC for one or several fitted geeglm model
+#' object from the geepack package.
+#'
+#' QIC is used to select a correlation structure. The QICu is used to compare
+#' models that have the same working correlation matrix and the same
+#' quasi-likelihood form but different mean specifications. CIC has been
+#' suggested as a more robust alternative to QIC when the model for the mean
+#' may not fit the data very well and when models with different correlation
+#' structures are compared.
+#'
+#' Models with smaller values of QIC, CIC, QICu, or QICC are preferred.
+#'
+#' If the MASS package is loaded then the \code{\link{ginv}} function is used
+#' for matrix inversion. Otherwise the standard \code{\link{solve}} function is
+#' used.
+#'
+#' @aliases QIC QIC.geeglm QIC.geekin QIC.ordgee
+#' @param object a fitted GEE model from the geepack package. Currently only
+#' works on geeglm objects
+#' @param \dots optionally more fitted geeglm model objects
+#' @return A vector or matrix with the QIC, QICu, quasi likelihood, CIC, the
+#' number of mean effect parameters, and the corrected QIC for each GEE object
+#' @author Claus Ekstrom \email{claus@@rprimer.dk}
+#' @seealso \code{geeglm}
+#' @references Pan, W. (2001). \emph{Akaike's information criterion in
+#' generalized estimating equations}. Biometrics, 57, 120-125.\cr Hardin, J.W.
+#' and Hilbe, J.M. (2012). \emph{Generalized Estimating Equations, 2nd
+#' Edition}, Chapman and Hall/CRC: New York. \cr Hin, L.-Y. and Wang, Y-G.
+#' (2009). \emph{Working-correlation-structure identification in generalized
+#' estimating equations}, Statistics in Medicine 28: 642-658. \cr Thall, P.F.
+#' and Vail, S.C. (1990). \emph{Some Covariance Models for Longitudinal Count
+#' Data with Overdispersion}.  Biometrics, 46, 657-671.
+#' @keywords htest
+#' @examples
+#'
+#' library(geepack)
+#' data(ohio)
+#' fit <- geeglm(resp ~ age + smoke + age:smoke, id=id, data=ohio,
+#'              family=binomial, corstr="exch", scale.fix=TRUE)
+#' QIC(fit)
+#'
+#' @rdname QIC
+#' @export
 QIC.geeglm <- function(object, ...) {
 
   #
@@ -12,7 +59,7 @@ QIC.geeglm <- function(object, ...) {
   invert <- if ("MASS" %in% loadedNamespaces()) {
     MASS::ginv
   } else { solve }
- 
+
   # Missing:
   # Check correct handling of link and family functions
 
@@ -30,29 +77,29 @@ QIC.geeglm <- function(object, ...) {
                     gaussian = sum(((y - mu)^2)/-2),
                     binomial = sum(y*log(mu/(1 - mu)) + log(1 - mu)),
                     Gamma = sum(-y/(mu - log(mu))),
-                    stop("Error: distribution not recognized"))  
+                    stop("Error: distribution not recognized"))
 
     # Fit model with independence correlation structure
     object$call$corstr <- "independence"
     object$call$zcor <- NULL
     model.indep <- eval(object, parent.frame())
     # model.indep <- update(object, corstr="independence",zcorr=NULL)
-  
+
     # Trace term (penalty for model complexity)
-    AIinverse <- invert(model.indep$geese$vbeta.naiv) 
+    AIinverse <- invert(model.indep$geese$vbeta.naiv)
     Vr <- object$geese$vbeta
     trace <- sum(diag(AIinverse %*% Vr))
     params <- length(coef(object)) # Mean parameters in the model
 
     kpm <- params+length(object$geese$alpha)
-    
+
     # QIC
     QIC <- -2*(quasi - trace)
     QICu <- -2*(quasi - params)
     QICC <- QIC + (2*kpm*(kpm+1))/(length(object$residuals)-kpm-1)
     output <- c(QIC, QICu, quasi, trace, params, QICC)
     names(output) <- c("QIC", "QICu", "Quasi Lik", "CIC", "params", "QICC")
-    output 
+    output
   }
 
   if (length(list(...))) {
@@ -77,12 +124,13 @@ QIC.geeglm <- function(object, ...) {
     res
   } else {
     computeqic(object)
-  } 
+  }
 }
 
 
 
-
+#' @rdname QIC
+#' @export
 QIC.ordgee <- function(object, ...) {
 
   #
@@ -97,7 +145,7 @@ QIC.ordgee <- function(object, ...) {
   invert <- if ("MASS" %in% loadedNamespaces()) {
     MASS::ginv
   } else { solve }
- 
+
   # Missing:
   # Check correct handling of link and family functions
 
@@ -115,29 +163,29 @@ QIC.ordgee <- function(object, ...) {
                     gaussian = sum(((y - mu)^2)/-2),
                     binomial = sum(y*log(mu/(1 - mu)) + log(1 - mu)),
                     Gamma = sum(-y/(mu - log(mu))),
-                    stop("Error: distribution not recognized"))  
+                    stop("Error: distribution not recognized"))
 
     # Fit model with independence correlation structure
     object$call$corstr <- "independence"
     object$call$zcor <- NULL
     model.indep <- eval(object, parent.frame())
     # model.indep <- update(object, corstr="independence",zcorr=NULL)
-  
+
     # Trace term (penalty for model complexity)
-    AIinverse <- invert(model.indep$geese$vbeta.naiv) 
+    AIinverse <- invert(model.indep$geese$vbeta.naiv)
     Vr <- object$geese$vbeta
     trace <- sum(diag(AIinverse %*% Vr))
     params <- length(coef(object)) # Mean parameters in the model
 
     kpm <- params+length(object$geese$alpha)
-    
+
     # QIC
     QIC <- -2*(quasi - trace)
     QICu <- -2*(quasi - params)
     QICC <- QIC + (2*kpm*(kpm+1))/(length(object$residuals)-kpm-1)
     output <- c(QIC, QICu, quasi, trace, params, QICC)
     names(output) <- c("QIC", "QICu", "Quasi Lik", "CIC", "params", "QICC")
-    output 
+    output
   }
 
   if (length(list(...))) {
@@ -162,7 +210,7 @@ QIC.ordgee <- function(object, ...) {
     res
   } else {
     computeqic(object)
-  } 
+  }
 }
 
 
@@ -181,7 +229,7 @@ QIC.ordgee <- function(object, ...) {
 ##   invert <- if ("MASS" %in% loadedNamespaces()) {
 ##     MASS:::ginv
 ##   } else { solve }
- 
+
 ##   # Missing:
 ##   # Check correct handling of link and family functions
 
@@ -197,11 +245,11 @@ QIC.ordgee <- function(object, ...) {
 
 ##     N <- nrow(X)
 ##     offset <- model.offset(mf)
-##     if (is.null(offset)) 
+##     if (is.null(offset))
 ##         offset <- rep(0, N)
 
-##     if (is.null(object$call$offset)) 
-##         mu <- as.vector(X %*% object$beta) else mu <- offset + X %*% object$beta   
+##     if (is.null(object$call$offset))
+##         mu <- as.vector(X %*% object$beta) else mu <- offset + X %*% object$beta
 
 ##     y  <- as.numeric(levels(mf[,1]))[mf[,1]]
 ##     if (length(unique(y))!=2)
@@ -216,7 +264,7 @@ QIC.ordgee <- function(object, ...) {
 ##                     gaussian = sum(((y - mu)^2)/-2),
 ##                     binomial = sum(y*mu + log(1 - exp(mu)/(1+exp(mu)))),
 ##                     Gamma = sum(-y/(mu - log(mu))),
-##                     stop("Error: distribution not recognized"))  
+##                     stop("Error: distribution not recognized"))
 
 ##     # Fit model with independence correlation structure
 ##     object$call$corstr <- "independence"
@@ -226,20 +274,20 @@ QIC.ordgee <- function(object, ...) {
 ##     # model.indep <- update(object, corstr="independence")
 
 ##     # Trace term (penalty for model complexity)
-##     AIinverse <- invert(model.indep$vbeta.naiv) 
+##     AIinverse <- invert(model.indep$vbeta.naiv)
 ##     Vr <- object$vbeta
 ##     trace <- sum(diag(AIinverse %*% Vr))
 ##     params <- length(object$beta) # Mean parameters in the model
 
 ##     kpm <- params+length(object$alpha)
-    
+
 ##     # QIC
 ##     QIC <- -2*(quasi - trace)
 ##     QICu <- -2*(quasi - params)
 ##     QICC <- QIC - (2*kpm*(kpm+1))/(length(object$residuals)-kpm-1)
 ##     output <- c(QIC, QICu, quasi, trace, params, QICC)
 ##     names(output) <- c("QIC", "QICu", "Quasi Lik", "CIC", "params", "QICC")
-##     output 
+##     output
 ##   }
 
 ##   if (length(list(...))) {
@@ -264,13 +312,14 @@ QIC.ordgee <- function(object, ...) {
 ##     res
 ##   } else {
 ##     computeqic(object)
-##   } 
+##   }
 ## }
 
 
-
+#' @rdname QIC
+#' @export
 QIC.geekin <- function(object, ...) {
-  
+
   # This functions is only needed to replace class
   # geeglm to make sure the regular
   # QIC function works
@@ -278,17 +327,19 @@ QIC.geekin <- function(object, ...) {
   if (! ("geeglm" %in% class(object)) ) {
     stop("QIC requires a geekin object as input")
   }
-  
+
   object$call[[1]] <- as.name("geeglm")
   object$call$varlist <- NULL
   object$call$na.action <- NULL
 
   # Swap class around
   class(object) <- c("geeglm", unique(class(object)))
-  QIC(object)  
+  QIC(object)
 }
 
 
+#' @rdname QIC
+#' @export
 QIC <- function(object, ...) {
   UseMethod("QIC")
 }
