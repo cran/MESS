@@ -35,16 +35,16 @@ univariate).
 }
 \examples{
 
-library(glmnet)
 set.seed(1)
 x <- matrix(rnorm(50000), nrow=50)
 y <- rnorm(50, mean=x[,1])
 weights <- adaptive.weights(x, y)
-glmnet(x, y, penalty.factor=weights$weights)
 
+if (requireNamespace("glmnet", quietly = TRUE)) {
+    res <- glmnet::glmnet(x, y, penalty.factor=weights$weights)
+    head(res)
 }
-\author{
-Claus Ekstrom \email{claus@rprimer.dk}
+
 }
 \references{
 Xou, H (2006). The Adaptive Lasso and Its Oracle Properties.
@@ -53,5 +53,7 @@ JASA, Vol. 101.
 \seealso{
 \code{glmnet}
 }
+\author{
+Claus Ekstrom \email{claus@rprimer.dk}
+}
 \keyword{manip}
-

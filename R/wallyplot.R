@@ -78,6 +78,8 @@ wallyplot.lm <- function(x, y=x, FUN=residualplot,
 #' as \code{x} then the function \code{simulateFunction} is used to generate
 #' the remaining y values corresponding the situations under the null.
 #'
+#' For a description of the features of the default residual plot see the help page for \code{\link{residualplot}}.
+#'
 #' @aliases wallyplot wallyplot.lm wallyplot.default
 #' @param x a numeric vector of x values, or an lm object.
 #' @param y a numeric vector of y values of the same length as x or a n * 9
@@ -98,6 +100,7 @@ wallyplot.lm <- function(x, y=x, FUN=residualplot,
 #' @keywords iplot
 #' @examples
 #'
+#' \dontrun{
 #' data(trees)
 #' res <- lm(Volume ~ Height + Girth, data=trees)
 #' wallyplot(res)
@@ -116,7 +119,7 @@ wallyplot.lm <- function(x, y=x, FUN=residualplot,
 #' # Create the Wallyplot
 #' wallyplot(trees$Girth, trees$Girth+rstudent(res), FUN=cprplot,
 #'           simulateFunction=cprsimulate, xlab="Girth")
-#'
+#' }
 #'
 #' @export
 wallyplot <- function(x, y=x, FUN=residualplot,

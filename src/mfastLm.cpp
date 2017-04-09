@@ -6,13 +6,21 @@ using namespace Rcpp;
 //'
 //' @description Fast computation of simple regression slopes for each predictor represented by a column in a matrix
 //' @param y A vector of outcomes.
-//' @param x A matrix of regressor variables. Must have the same number of rows as the length of y.
+//' @param x A matrix of regressor variables. Must have the same number of rows as the length of y. Missing variables are not handled
 //' @param addintercept A logical that determines if the intercept should be included in all analyses (TRUE) or not (FALSE)
-//' @return A data frame with two variables: coefficients and stderr that gives the slope estimate and corresponding standard error for each column in x.
+//' @return A data frame with three variables: coefficients, stderr, and tstat that gives the slope estimate, the corresponding standard error, and their ratio for each column in x.
 //' @author Claus Ekstrom <claus@@rprimer.dk>
+//' @examples
+//' \dontrun{
+//'   // Generate 100000 predictors and 100 observations
+//'   x <- matrix(rnorm(100*100000))
+//'   y <- rnorm(100, mean=x[,1])
+//'   mfastLM_cpp(y, x)
+//'
+//' }
 //' @export
 // [[Rcpp::export]]
-DataFrame mfastLm_cpp(NumericVector y, NumericMatrix x, int addintercept) {
+DataFrame mfastLmCpp(NumericVector y, NumericMatrix x, bool addintercept=true) {
   arma::uword n = x.nrow(), k = x.ncol();
   int df = n-1;
 
@@ -30,7 +38,7 @@ DataFrame mfastLm_cpp(NumericVector y, NumericMatrix x, int addintercept) {
     df = n-2;
   }
 
-  arma::colvec rescoef = arma::zeros(k), resse = arma::zeros(k);
+  arma::colvec rescoef = arma::zeros(k), resse = arma::zeros(k), tstat = arma::zeros(k);
   arma::colvec coef, resid, stderrest;
   double sig2;
   
@@ -47,10 +55,15 @@ DataFrame mfastLm_cpp(NumericVector y, NumericMatrix x, int addintercept) {
     sig2 = arma::as_scalar(arma::trans(resid)*resid/df);
     stderrest = arma::sqrt(sig2 * arma::diagvec( arma::inv(arma::trans(newX)*newX)) );
     resse(i) = stderrest(0);
+    tstat(i) = rescoef(i)/resse(i);
   }
 
   // create a new data frame and return it
   return DataFrame::create(Rcpp::Named("coefficients")=rescoef,
-			   Rcpp::Named("stderr")=resse);
+			   Rcpp::Named("stderr")=resse,
+			   Rcpp::Named("tstat")=tstat
+			   );
 }
+
+
 

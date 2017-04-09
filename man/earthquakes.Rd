@@ -17,7 +17,7 @@
 \url{http://earthquake.usgs.gov/}
 }
 \description{
-Information on earthquakes worldwide in 2015 with a magnitude greater than 3 on the Richteer scale. The variables are just a subset of the variables available at the source
+Information on earthquakes worldwide in 2015 with a magnitude greater than 3 on the Richter scale. The variables are just a subset of the variables available at the source
 }
 \examples{
 
@@ -26,4 +26,3 @@ with(earthquakes, place[which.max(mag)])
 
 }
 \keyword{datasets}
-

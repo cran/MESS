@@ -11,11 +11,11 @@
 #' @name MESS
 #' @aliases MESS-package MESS
 #' @docType package
-#' @useDynLib MESS
+#' @useDynLib MESS, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
-#' @author Claus Ekstrom \email{claus@@rprimer.dk}\cr Maintainer: Claus Ekstrom
+#' @author Claus Thorn Ekstrøm \email{claus@@rprimer.dk}\cr Maintainer: Claus Thorn Ekstrøm
 #' \email{claus@@rprimer.dk}
-#' @references Ekstrom, C. (2011). The R Primer. Chapman & Hall.
+#' @references Ekstrøm, C. (2011). The R Primer. Chapman & Hall.
 #' @import utils stats graphics
 #' @keywords package
 NULL
@@ -43,15 +43,12 @@ NULL
 #'
 #' plot(bdstat$year + bdstat$month/13, bdstat$birth, type="l")
 #'
-#'
-#' # Create table of births
+#' # Create a table of births
 #' # Remove year 2013 as it is incomplete
 #' btable <- xtabs(births ~ year + month, data=bdstat, subset=(year<2013))
 #'
 #' # Compute yearly birth frequencies per month
 #' btable.freq <- prop.table(btable, margin=1)
-#'
-#'
 #'
 NULL
 
@@ -404,7 +401,7 @@ NULL
 #'     \item{\code{myear}}{a numeric vector} The midpoint of the year interval
 #'   }
 #' @source Data collected from Danmarsk Statistik.
-#' See \url{http://www.dst.dk/en} for more information.
+#' See \url{https://www.dst.dk/en} for more information.
 #' @keywords datasets
 #' @examples
 #'
@@ -413,9 +410,6 @@ NULL
 #'
 #'
 NULL
-
-
-
 
 
 #' Gene expression data from two-color dye-swap experiment
@@ -455,7 +449,7 @@ NULL
 
 #' Earthquakes in 2015
 #'
-#' Information on earthquakes worldwide in 2015 with a magnitude greater than 3 on the Richteer scale. The variables are just a subset of the variables available at the source
+#' Information on earthquakes worldwide in 2015 with a magnitude greater than 3 on the Richter scale. The variables are just a subset of the variables available at the source
 #'
 #'
 #' @name earthquakes

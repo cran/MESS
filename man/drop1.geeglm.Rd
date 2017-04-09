@@ -2,7 +2,7 @@
 % Please edit documentation in R/drop1.geeglm.R
 \name{drop1.geeglm}
 \alias{drop1.geeglm}
-\title{Drop All Possible Single Terms to a geeglm Model Using Wald Test}
+\title{Drop All Possible Single Terms to a geeglm Model Using Wald or Score Test}
 \usage{
 \method{drop1}{geeglm}(object, scope, test = c("Wald", "none", "score",
   "sasscore"), method = c("robust", "naive", "sandwich"), ...)
@@ -38,11 +38,10 @@ fit <- geeglm(resp ~ age + smoke + age:smoke, id=id, data=ohio,
 drop1(fit)
 
 }
-\author{
-Claus Ekstrom \email{claus@ekstroem.dk}
-}
 \seealso{
 \code{\link{drop1}}, \code{geeglm}, \code{geese}
 }
+\author{
+Claus Ekstrom \email{claus@ekstroem.dk}
+}
 \keyword{htest}
-
