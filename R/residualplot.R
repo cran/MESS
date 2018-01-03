@@ -1,35 +1,45 @@
 #' @rdname residualplot
 #' @export
-residualplot.default <- function(x, y=NULL, candy=TRUE, bandwidth = 0.3, xlab="Fitted values", ylab="Std.res.", col.sd="blue", col.alpha=0.3,...) {
+residualplot.default <- function(x, y=NULL, candy=TRUE, bandwidth = 0.3, xlab="Fitted values", ylab="Std.res.", col.sd="blue", col.alpha=0.3, ylim=NA, ...) {
 
     if (is.null(y))
         stop("y must be specified")
-  if (candy)
-    plot(x, y, xlab = xlab, ylab = ylab,
-         pch = 1 + 15 * (abs(y) > 1.96), ...)
-  else plot(x, y, xlab = xlab, ylab=ylab, ...)
-  if (candy) {
 
-    # Set the colors
-    if (col.alpha == 0)
-      col.trans <- col.sd
-    else col.trans <- sapply(col.sd, FUN = function(x) do.call(rgb,
-                                     as.list(c(col2rgb(x)/255, col.alpha))))
-    uniqx <- sort(unique(x))
-    if (length(uniqx) > 3) {
-      lines(smooth.spline(x, y, df = 3), lty = 2, lwd = 2,
-            col = "black")
+    if (!candy) {
+        plot(x, y, xlab = xlab, ylab=ylab, ...)
+    } else {
+
+        ## Set the colors
+        if (col.alpha == 0)
+            col.trans <- col.sd
+        else col.trans <- sapply(col.sd, FUN = function(x) do.call(rgb,
+                                                                   as.list(c(col2rgb(x)/255, col.alpha))))
+
+        ## Compute the range of the interval
+        uniqx <- sort(unique(x))
+        vary <- length(uniqx)
+        window <- bandwidth * (max(x) - min(x))/2
+        for (i in 1:length(uniqx)) {
+            vary[i] <- 1.96 * sd(y[abs(x - uniqx[i]) <= window])
+        }
+        vary[is.na(vary)] <- 0
+
+
+        if (any(is.na(ylim))) {
+            ylim <- c(min(y, -vary), max(y, vary))
+        }
+        
+        plot(x, y, xlab = xlab, ylab = ylab, pch = 1 + 15 * (abs(y) > 1.96), ylim=ylim, ...)
+               
+        if (length(uniqx) > 3) {
+            lines(smooth.spline(x, y, df = 3), lty = 2, lwd = 2,
+                  col = "black")
+        }
+
+        polygon(c(uniqx, rev(uniqx)), c(vary, -(rev(vary))),
+                col = col.trans, border = NA)
     }
-    window <- bandwidth * (max(x) - min(x))/2
-    vary <- length(uniqx)
-    for (i in 1:length(uniqx)) {
-      vary[i] <- 1.96 * sd(y[abs(x - uniqx[i]) <= window])
-    }
-    vary[is.na(vary)] <- 0
-    polygon(c(uniqx, rev(uniqx)), c(vary, -(rev(vary))),
-            col = col.trans, border = NA)
-  }
-  return(invisible(NULL))
+    return(invisible(NULL))
 }
 
 
@@ -42,17 +52,33 @@ residualplot.lm <- function(x, y, candy=TRUE, bandwidth = 0.3, xlab="Fitted valu
 }
 
 
+#' @rdname residualplot
+#' @export
+residualplot.glm <- function(x, y, candy=TRUE, bandwidth = 0.4, xlab="Fitted values", ylab="Std. dev. res.", col.sd="blue", col.alpha=0.3,...) {
+    
+#    family <- family(x)$family
+#    if (!(family %in% c("binomial", "poisson", "gaussian")))
+#        stop(paste0("Residualplot for family ", family, " in glm is not implemented yet"))
+
+#    y <- rstudent(x, type="response")
+    y <- rstandard(x) # Deviance residuals
+    x <- predict(x, type="link")
+    residualplot(x, y, candy, bandwidth, xlab, ylab, col.sd, col.alpha, ...)
+}
+
+
 
 
 
 #' Plots a standardaized residual
 #'
-#' Plots a standardized residual plot from an lm object and provides additional
+#' Plots a standardized residual plot from an lm or glm object and provides additional
 #' graphics to help evaluate the variance homogeneity and mean.
 #'
-#' Plots a standardized residual plot from an lm object and provides additional
-#' graphics to help evaluate the variance homogeneity and mean.
-#'
+#' The y axis shows the studentized residuals (for lm objects) or
+#' standardized deviance residuals (for glm objects). The x axis shows the linear predictor, i.e., the
+#' predicted values for lm objects.
+#' 
 #' The blue area is a smoothed estimate of 1.96*SD of the standardized
 #' residuals in a window around the predicted value. The blue area should
 #' largely be rectangular if the standardized residuals have more or less the
@@ -76,6 +102,7 @@ residualplot.lm <- function(x, y, candy=TRUE, bandwidth = 0.3, xlab="Fitted valu
 #' @param col.sd color for the background residual deviation
 #' @param col.alpha number between 0 and 1 determining the transprency of the
 #' standard deviation plotting color
+#' @param ylim pair of observations that set the minimum and maximum of the y axis. If set to NA (the default) then the limits are computed from the data. 
 #' @param ... Other arguments passed to the plot function
 #' @return Produces a standardized residual plot
 #' @author Claus Ekstrom <claus@@rprimer.dk>
@@ -87,11 +114,13 @@ residualplot.lm <- function(x, y, candy=TRUE, bandwidth = 0.3, xlab="Fitted valu
 #' data(trees)
 #' model <- lm(Volume ~ Girth + Height, data=trees)
 #' residualplot(model)
+#' model2 <- lm(Volume ~ Girth + I(Girth^2) + Height, data=trees)
+#' residualplot(model2)
 #'
 #' @export
 residualplot <- function(x, y=NULL, candy=TRUE, bandwidth = 0.3,
 	                 xlab="Fitted values", ylab="Std.res.",
-                         col.sd="blue", col.alpha=0.3,...) {
+                         col.sd="blue", col.alpha=0.3, ylim=NA, ...) {
   UseMethod("residualplot")
 }
 

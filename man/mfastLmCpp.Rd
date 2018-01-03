@@ -9,7 +9,7 @@ mfastLmCpp(y, x, addintercept = TRUE)
 \arguments{
 \item{y}{A vector of outcomes.}
 
-\item{x}{A matrix of regressor variables. Must have the same number of rows as the length of y. Missing variables are not handled}
+\item{x}{A matrix of regressor variables. Must have the same number of rows as the length of y.}
 
 \item{addintercept}{A logical that determines if the intercept should be included in all analyses (TRUE) or not (FALSE)}
 }
@@ -19,12 +19,15 @@ A data frame with three variables: coefficients, stderr, and tstat that gives th
 \description{
 Fast computation of simple regression slopes for each predictor represented by a column in a matrix
 }
+\details{
+Missing values (NA, Inf, NaN) are completely disregarded and pairwise complete cases are used for the analysis.
+}
 \examples{
 \dontrun{
   // Generate 100000 predictors and 100 observations
-  x <- matrix(rnorm(100*100000))
+  x <- matrix(rnorm(100*100000), nrow=100)
   y <- rnorm(100, mean=x[,1])
-  mfastLM_cpp(y, x)
+  mfastLmCpp(y, x)
 
 }
 }

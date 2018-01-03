@@ -23,7 +23,30 @@
 #'
 #' @export cmd
 cmd <- function(x, y) {
-    .Call('MESS_cmd', PACKAGE = 'MESS', x, y)
+    .Call(`_MESS_cmd`, x, y)
+}
+
+#' Binning based on cumulative sum with reset above threshold
+#' 
+#' Fast binning of cumulative vector sum with new groups when the sum passes a threshold or the group size becomes too large
+#'
+#' Missing values (NA, Inf, NaN) are completely disregarded and pairwise complete cases are used f
+#' 
+#' @param x A matrix of regressor variables. Must have the same number of rows as the length of y.
+#' @param cutoff The value of the threshold that the cumulative group sum must not cross. 
+#' @param maxgroupsize An integer that defines the maximum number of elements in each group. NULL (the default) corresponds to no group size.
+#' @return An integer vector giving the group indices
+#' @author Claus Ekstrom <claus@@rprimer.dk>
+#' @examples
+#'
+#' set.seed(1)
+#' x <- sample(10, 20, replace = TRUE)
+#' cumsumbinning(x, 15)
+#' cumsumbinning(x, 15, 3)
+#' 
+#' @export
+cumsumbinning <- function(x, cutoff, maxgroupsize = NULL) {
+    .Call(`_MESS_cumsumbinning`, x, cutoff, maxgroupsize)
 }
 
 #' Fill down NA with the last observed observation
@@ -40,28 +63,52 @@ cmd <- function(x, y) {
 #'
 #' @export
 filldown <- function(x) {
-    .Call('MESS_filldown', PACKAGE = 'MESS', x)
+    .Call(`_MESS_filldown`, x)
+}
+
+#' Kolmogorov-Smirnov goodness of fit test for cumulative discrete data
+#'
+#' The name of the function might change in the future so keep that in mind!
+#'
+#' @description Kolmogorov-Smirnov goodness of fit test for cumulative discrete data. 
+#' @param x A vector representing the contingency table.
+#' @param B The number of simulations used to compute the p-value.
+#' @param prob A positive vector of the same length as x representing the distribution under the null hypothesis. It will be scaled to sum to 1. If NULL (the default) then a uniform distribution is assumed.
+#' @details Simulation is done by random sampling from the null hypothesis.
+#' @return A list of class "htest" giving the simulation results.
+#' @author Claus Ekstrom <claus@@rprimer.dk>
+#' @examples
+#'
+#' x <- 1:6
+#' ks_cumtest(x)
+#'
+#' @export
+ks_cumtest <- function(x, B = 10000L, prob = NULL) {
+    .Call(`_MESS_ks_cumtest`, x, B, prob)
 }
 
 #' Fast marginal simple regresion analyses
+#' 
+#' Fast computation of simple regression slopes for each predictor represented by a column in a matrix
 #'
-#' @description Fast computation of simple regression slopes for each predictor represented by a column in a matrix
+#' Missing values (NA, Inf, NaN) are completely disregarded and pairwise complete cases are used for the analysis.
+#' 
 #' @param y A vector of outcomes.
-#' @param x A matrix of regressor variables. Must have the same number of rows as the length of y. Missing variables are not handled
+#' @param x A matrix of regressor variables. Must have the same number of rows as the length of y. 
 #' @param addintercept A logical that determines if the intercept should be included in all analyses (TRUE) or not (FALSE)
 #' @return A data frame with three variables: coefficients, stderr, and tstat that gives the slope estimate, the corresponding standard error, and their ratio for each column in x.
 #' @author Claus Ekstrom <claus@@rprimer.dk>
 #' @examples
 #' \dontrun{
 #'   // Generate 100000 predictors and 100 observations
-#'   x <- matrix(rnorm(100*100000))
+#'   x <- matrix(rnorm(100*100000), nrow=100)
 #'   y <- rnorm(100, mean=x[,1])
-#'   mfastLM_cpp(y, x)
+#'   mfastLmCpp(y, x)
 #'
 #' }
 #' @export
 mfastLmCpp <- function(y, x, addintercept = TRUE) {
-    .Call('MESS_mfastLmCpp', PACKAGE = 'MESS', y, x, addintercept)
+    .Call(`_MESS_mfastLmCpp`, y, x, addintercept)
 }
 
 #' Two-sided table test with fixed margins
@@ -87,7 +134,28 @@ mfastLmCpp <- function(y, x, addintercept = TRUE) {
 #'
 #' @export
 onemargintest <- function(x, B = 10000L) {
-    .Call('MESS_onemargintest', PACKAGE = 'MESS', x, B)
+    .Call(`_MESS_onemargintest`, x, B)
+}
+
+#' Compute Schur products (element-wise) of all pairwise combinations of columns in matrix
+#'
+#' Fast computation of all pairwise element-wise column products of a matrix.
+#'
+#' Note that the output order of columns corresponds to the order of the columns in x. First column 1 is multiplied with each of the other columns, then column 2 with the remaining columns etc. 
+#'
+#' @param x A matrix with dimensions r*c.
+#' @param self A logical that determines whether a column should also be multiplied by itself.
+#' @return A matrix with the same number of rows as x and a number of columns corresponding to c choose 2 (+ c if self is TRUE), where c is the number of columns of x. 
+#' @author Claus Ekstrom <claus@@rprimer.dk>
+#' @examples
+#'
+#' X <- cbind(rep(1, 4), 1:4, 4:1)
+#' pairwise_Schur_product(X)
+#' pairwise_Schur_product(X, self=TRUE)
+#'
+#' @export
+pairwise_Schur_product <- function(x, self = FALSE) {
+    .Call(`_MESS_pairwise_Schur_product`, x, self)
 }
 
 #' Fast extraction of matrix diagonal
@@ -99,7 +167,7 @@ onemargintest <- function(x, B = 10000L) {
 #' @author Claus Ekstrom <claus@@rprimer.dk>
 #' @export qdiag
 qdiag <- function(x) {
-    .Call('MESS_qdiag', PACKAGE = 'MESS', x)
+    .Call(`_MESS_qdiag`, x)
 }
 
 #' Fast quadratic form computation
@@ -113,7 +181,7 @@ qdiag <- function(x) {
 #' @author Claus Ekstrom <claus@@rprimer.dk>
 #' @export
 quadform <- function(x, M, invertM = FALSE, transposex = FALSE) {
-    .Call('MESS_quadform', PACKAGE = 'MESS', x, M, invertM, transposex)
+    .Call(`_MESS_quadform`, x, M, invertM, transposex)
 }
 
 #' Fast replication of a matrix
@@ -132,7 +200,7 @@ quadform <- function(x, M, invertM = FALSE, transposex = FALSE) {
 #'
 #' @export
 repmat <- function(x, nrow = 1L, ncol = 1L) {
-    .Call('MESS_repmat', PACKAGE = 'MESS', x, nrow, ncol)
+    .Call(`_MESS_repmat`, x, nrow, ncol)
 }
 
 #' Fast computation of trace of matrix product
@@ -149,6 +217,6 @@ repmat <- function(x, nrow = 1L, ncol = 1L) {
 #'
 #' @export
 tracemp <- function(A, B) {
-    .Call('MESS_tracemp', PACKAGE = 'MESS', A, B)
+    .Call(`_MESS_tracemp`, A, B)
 }
 
