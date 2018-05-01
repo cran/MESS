@@ -6,6 +6,20 @@
 
 using namespace Rcpp;
 
+// bin
+List bin(NumericVector x, double width, double origin, bool missinglast);
+RcppExport SEXP _MESS_bin(SEXP xSEXP, SEXP widthSEXP, SEXP originSEXP, SEXP missinglastSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type width(widthSEXP);
+    Rcpp::traits::input_parameter< double >::type origin(originSEXP);
+    Rcpp::traits::input_parameter< bool >::type missinglast(missinglastSEXP);
+    rcpp_result_gen = Rcpp::wrap(bin(x, width, origin, missinglast));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cmd
 double cmd(NumericMatrix x, NumericMatrix y);
 RcppExport SEXP _MESS_cmd(SEXP xSEXP, SEXP ySEXP) {
@@ -92,6 +106,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// pairwise_combination_indices
+NumericMatrix pairwise_combination_indices(unsigned long n, bool self);
+RcppExport SEXP _MESS_pairwise_combination_indices(SEXP nSEXP, SEXP selfSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< unsigned long >::type n(nSEXP);
+    Rcpp::traits::input_parameter< bool >::type self(selfSEXP);
+    rcpp_result_gen = Rcpp::wrap(pairwise_combination_indices(n, self));
+    return rcpp_result_gen;
+END_RCPP
+}
 // qdiag
 NumericVector qdiag(const NumericMatrix& x);
 RcppExport SEXP _MESS_qdiag(SEXP xSEXP) {
@@ -144,6 +170,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_MESS_bin", (DL_FUNC) &_MESS_bin, 4},
     {"_MESS_cmd", (DL_FUNC) &_MESS_cmd, 2},
     {"_MESS_cumsumbinning", (DL_FUNC) &_MESS_cumsumbinning, 3},
     {"_MESS_filldown", (DL_FUNC) &_MESS_filldown, 1},
@@ -151,6 +178,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MESS_mfastLmCpp", (DL_FUNC) &_MESS_mfastLmCpp, 3},
     {"_MESS_onemargintest", (DL_FUNC) &_MESS_onemargintest, 2},
     {"_MESS_pairwise_Schur_product", (DL_FUNC) &_MESS_pairwise_Schur_product, 2},
+    {"_MESS_pairwise_combination_indices", (DL_FUNC) &_MESS_pairwise_combination_indices, 2},
     {"_MESS_qdiag", (DL_FUNC) &_MESS_qdiag, 1},
     {"_MESS_quadform", (DL_FUNC) &_MESS_quadform, 4},
     {"_MESS_repmat", (DL_FUNC) &_MESS_repmat, 3},
