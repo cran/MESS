@@ -3,12 +3,12 @@
 #' Compute power of test, or determine parameters to obtain target
 #' power for equal and unequal sample sizes.
 #'
-#' @param n Number of observations (per group)
+#' @param n Number of observations (in the smallest group if two groups)
 #' @param delta True difference in means
 #' @param sd Standard deviation
 #' @param sig.level Significance level (Type I error probability)
 #' @param power Power of test (1 minus Type II error probability)
-#' @param ratio The ratio n2/n1 between the larger group and the smaller group. Should be a value equal to or greater than 1 since n2 is the larger group. Defaults to 1 (equal group sizes)
+#' @param ratio The ratio n2/n1 between the larger group and the smaller group. Should be a value equal to or greater than 1 since n2 is the larger group. Defaults to 1 (equal group sizes). If ratio is set to NULL (i.e., find the ratio) then the ratio might be smaller than 1 depending on the desired power and ratio of the sd's.
 #' @param sd.ratio The ratio sd2/sd1 between the standard deviations in the larger group and the smaller group. Defaults to 1 (equal standard deviations in the two groups)
 #' @param type Type of t test
 #' @param alternative One- or two-sided test
@@ -33,7 +33,16 @@
 #' @seealso \code{\link{power.t.test}}, \code{\link{power_prop_test}}, \code{\link{power.prop.test}}
 #' @keywords htest
 #' @examples
+#' # Sampling with a ratio of 1:4
 #' power_t_test(delta=300, sd=450, power=.8, ratio=4)
+#'
+#' # Equal group sizes but different sd's
+#' # The sd in the first group is twice the sd in the second group
+#' power_t_test(delta=300, sd=450, power=.8, sd.ratio=.5)
+#'
+#' # Fixed group one size to 50 individuals, but looking for the number of individuals in the
+#' # second group. Different sd's with twice the sd in the larger group
+#' power_t_test(n=50, delta=300, sd=450, power=.8, ratio=NULL, sd.ratio=2)
 #' @export
 power_t_test <-
   function (n = NULL, delta = NULL, sd = 1, sig.level = 0.05, power = NULL,
@@ -49,10 +58,10 @@ power_t_test <-
     if (sum(sapply(list(n, delta, sd, power, sig.level, ratio, sd.ratio), is.null)) != 1)
       stop("exactly one of n, delta, sd, power, sig.level, ratio and sd.ratio must be NULL")
 
-    if (!is.null(ratio) && ratio <= 0)
-      stop("ratio between group sizes must be positive")
-    if (!is.null(sd.ratio) && sd.ratio <= 0)
-      stop("sd.ratio between group sd's must be positive")
+    if (!is.null(ratio) && ratio < 1)
+      stop("ratio between group sizes cannot be less than 1")
+    if (!is.null(sd.ratio) && sd.ratio < 0)
+      stop("sd.ratio between group sd's cannot be less than 1")
   }
   else {
       ratio <- 1
@@ -70,14 +79,14 @@ power_t_test <-
   p.body <- quote({
     nu <- switch(tsample, n-1, switch(df.method, welch=(sd^2/n + (sd*sd.ratio)^2/(n*ratio))^2/((sd^2/n)^2/(n-1) + ((sd*sd.ratio)^2/(ratio*n))^2/(n*ratio-1)),
 classical=(1+ratio)*n-2))
-    pt(qt(sig.level/tside, nu, lower = FALSE), nu, ncp = switch(tsample, sqrt(n/tsample), sqrt(n/(1+sd.ratio/ratio))) * delta/sd, lower = FALSE)
+    pt(qt(sig.level/tside, nu, lower = FALSE), nu, ncp = switch(tsample, sqrt(n/tsample), sqrt(n/(1+sd.ratio^2/ratio))) * delta/sd, lower = FALSE)
   })
   if (strict & tside == 2)
     p.body <- quote({
       nu <- switch(tsample, n-1, switch(df.method, welch=(sd^2/n + (sd*sd.ratio)^2/(n*ratio))^2/((sd^2/n)^2/(n-1) + ((sd*sd.ratio)^2/(ratio*n))^2/(n*ratio-1)),
 classical=(1+ratio)*n-2))
       qu <- qt(sig.level/tside, nu, lower = FALSE)
-      ncp <- switch(tsample, sqrt(n/tsample), sqrt(n/(1+sd.ratio/ratio))) * delta/sd
+      ncp <- switch(tsample, sqrt(n/tsample), sqrt(n/(1+sd.ratio^2/ratio))) * delta/sd
       pt(qu, nu, ncp = ncp, lower = FALSE) +
         pt(-qu, nu, ncp = ncp, lower = TRUE)
     })
@@ -103,15 +112,18 @@ classical=(1+ratio)*n-2))
 #  n <- switch(type, paired=n, two.sample=c(n, ifelse(ratio==1, NULL, n*ratio)), one.sample=n)
 #  sd <- switch(type, paired=sd, two.sample=c(sd, ifelse(ratio==1, NULL, sd*sd.ratio)), one.sample=sd)
 
-  if (type=="two.sample" & ratio!=1) {
+  if (type=="two.sample" & (ratio!=1 | sd.ratio !=1)) {
       n <- c(n, n*ratio)
-      sd <- c(sd*sd.ratio)
+      sd <- c(sd, sd*sd.ratio)
   }
 
 
   METHOD <- paste(switch(type, one.sample = "One-sample t test power calculation",
                                two.sample = ifelse(ratio==1, "Two-sample t test power calculation", "Two-sample t test power calculation with unequal sizes"),
                          paired = "Paired t test power calculation"))
+  if (type=="two.sample" & sd.ratio != 1) {
+      METHOD <- paste0(METHOD, ifelse(ratio==1, " with", " and"), " unequal variances")
+  }
   structure(list(n = n, delta = delta, sd = sd, sig.level = sig.level,
                  power = power, alternative = alternative, note = NOTE,
                  method = METHOD), class = "power.htest")

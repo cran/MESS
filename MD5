@@ -1,7 +1,7 @@
-399fec624c1e3da5d9f0046938cec814 *DESCRIPTION
-0e3989029d3117c3992d4f9cc3f6884e *NAMESPACE
+5a88e0bcf8614b34941930e1ca50620f *DESCRIPTION
+12ec525846ca2e5a54c1201a14378467 *NAMESPACE
 079431315e37c29891173fcfa131d382 *R/MESS-package.R
-22391e73e9a1ff6638e3b06eb1fa2a47 *R/RcppExports.R
+54465248abe65c7f6b2b44473721cd1b *R/RcppExports.R
 167dab720ff06e150fc4fc1646070e18 *R/adaptive.weights.R
 20085b599f250d7a63e6ecc4131c1e41 *R/age.R
 f5508448f3c251a13fe2e88efcb44f3d *R/auc.R
@@ -27,7 +27,7 @@ c155f15d1acf9c9206644eb3254f5b74 *R/panel.R
 d4846bc527035f1ef3fa254842c6398f *R/power.binom.test.R
 78609f9bc0a99d4d12e7d44d794e49c1 *R/power.mcnemar.test.R
 6de1c70da6f5ca0d9dea39cf49fadc98 *R/power.prop.test.R
-1550b5eb2740ce02295e08aea0dd8da4 *R/power.t.test.R
+3ecbb17c21f90e12f8903a38cdf4200a *R/power.t.test.R
 75a43b43c524ad11bdbd4ae6f1ebc268 *R/prepost.R
 3d47f108f8f53ae4ced4e3de45f8fa6a *R/qic.R
 7e384a43304d5979ecf7919835985e69 *R/residualplot.R
@@ -64,6 +64,7 @@ d99ddac3378475e04880b5fb3986db3c *data/smokehealth.rda
 852885ab6d837dfb17f8cc4146d0b04d *man/MESS.Rd
 c7a3b519e61c96c098a3cf3fc40b4d59 *man/QIC.Rd
 54238cdaf31461656b28b5abec2f5903 *man/adaptive.weights.Rd
+5b9a7845ad368cc4efb2e8b1a1f4ebb1 *man/add_torows.Rd
 fd5860bf545b897aefe79c68e210e525 *man/age.Rd
 4d2fa717586116f2c225e70ba4a7d340 *man/auc.Rd
 2396d25aa7acad6e48f2894272a0a1a6 *man/bdstat.Rd
@@ -110,7 +111,7 @@ fe3ea714cb268e4a2e294c50fe36af3c *man/panel.r2.Rd
 5f29ed7f01f39ab1b27296fd70167c59 *man/power_binom_test.Rd
 d4e459e0c7df79e029c63134cdf434e6 *man/power_mcnemar_test.Rd
 2e4d90023683ff803d67c60fb30b8e5e *man/power_prop_test.Rd
-60384533b8aefccd7fedf6165970ee38 *man/power_t_test.Rd
+861abfd7a98714dbbbb3d65446a97370 *man/power_t_test.Rd
 b2c041c9c9d34667afb3b7db871fe09f *man/prepost.test.Rd
 0f1e5315bd70add956a61925c46c6503 *man/qdiag.Rd
 ee7e0e2172f222ac75b3590efd5fd639 *man/qpcr.Rd
@@ -135,8 +136,9 @@ dc23297700f8fa06ad056fa9aaf6926c *man/scorefct.Rd
 a99ac952165a3e63f90f7e27ce65f005 *man/write.xml.Rd
 2a6f9e9e044a78154d3cfda5936d6f48 *src/Makevars
 8d46d69896a1f1d31ed76035a0e49d67 *src/Makevars.win
-03702432482f3738960e2eed96f12b8a *src/RcppExports.cpp
+442fc68f3a2d1af2b14a66f3a079ed3d *src/RcppExports.cpp
 55bb529e426380fc92bd983396a82278 *src/access.cpp
+aa1e13f66e11b26003d035c72da63128 *src/addtorows.cpp
 a9f3d9f78dd95b67f0d029aef2088b18 *src/bin.cpp
 492fc660794847cdfd7b1ccb0f6bb5ec *src/chi_square.cpp
 33afd25a5248824d7be0c19300d8f244 *src/cmd.cpp
