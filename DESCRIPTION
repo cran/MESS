@@ -1,8 +1,8 @@
 Package: MESS
 Type: Package
 Title: Miscellaneous Esoteric Statistical Scripts
-Version: 0.5.4
-Date: 2018-12-07
+Version: 0.5.5
+Date: 2019-01-14
 Authors@R: person(given="Claus Thorn", family="Ekstrøm", role = c("aut", "cre"), email = "claus@rprimer.dk")
 Maintainer: Claus Thorn Ekstrøm <claus@rprimer.dk>
 Depends: R (>= 3.1), geepack, geeM,
@@ -20,7 +20,7 @@ ByteCompile: true
 License: GPL-2
 RoxygenNote: 6.1.1
 NeedsCompilation: yes
-Packaged: 2018-12-13 10:28:02 UTC; cld189
+Packaged: 2019-01-14 18:03:29 UTC; cld189
 Author: Claus Thorn Ekstrøm [aut, cre]
 Repository: CRAN
-Date/Publication: 2018-12-13 11:00:06 UTC
+Date/Publication: 2019-01-14 18:40:03 UTC
