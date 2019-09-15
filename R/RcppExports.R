@@ -72,6 +72,23 @@ cmd <- function(x, y) {
     .Call(`_MESS_cmd`, x, y)
 }
 
+#' Apply cumsum to each column of matrix
+#' 
+#' Fast computation of apply(x,2,cumsum)
+#'
+#' @param m A matrix
+#' @return A matrix the same size as m with the column-wise cumulative sums.
+#' @author Claus Ekstrom <claus@@rprimer.dk>
+#' @examples
+#'   # Generate a 100 by 10000 matrix
+#'   x <- matrix(rnorm(100*10000), nrow=100)
+#'   result <- colCumSum(x)
+#'
+#' @export
+colCumSum <- function(m) {
+    .Call(`_MESS_colCumSum`, m)
+}
+
 #' Binning based on cumulative sum with reset above threshold
 #' 
 #' Fast binning of cumulative vector sum with new groups when the sum passes a threshold or the group size becomes too large

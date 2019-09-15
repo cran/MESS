@@ -24,8 +24,8 @@
 #' areas should be added to the total area under the curve.  By
 #' default the auc function subtracts areas that have negative y
 #' values. Set \code{absolutearea=TRUE} to _add_ the absolute value of the negative areas to the total area.
-#' @param \dots additional arguments passed on to approx. In particular rule
-#' can be set to determine how values outside the range of x is handled.
+#' @param subdivisions an integer telling how many subdivisions should be used for integrate (for non-linear approximations)
+#' @param \dots additional arguments passed on to approx (for linear approximations). In particular rule can be set to determine how values outside the range of x is handled.
 #' @return The value of the area under the curve.
 #' @author Claus Ekstrom \email{claus@@rprimer.dk}
 #' @seealso \code{\link{approx}}, \code{\link{splinefun}},
@@ -52,13 +52,12 @@
 #'
 #' @export auc
 auc <-
-function(x, y, from = min(x, na.rm=TRUE), to = max(x, na.rm=TRUE), type=c("linear", "spline"), absolutearea=FALSE, ...)
+function(x, y, from = min(x, na.rm=TRUE), to = max(x, na.rm=TRUE), type=c("linear", "spline"), absolutearea=FALSE, subdivisions =100, ...)
 {
     type <- match.arg(type)
 
     # Sanity checks
     stopifnot(length(x) == length(y))
-
     stopifnot(!is.na(from))
 
     if (length(unique(x)) < 2)
@@ -83,13 +82,14 @@ function(x, y, from = min(x, na.rm=TRUE), to = max(x, na.rm=TRUE), type=c("linea
             res <- 0.5 * sum(diff(values$x) * (abs(values$y[-1]) + abs(values$y[-length(values$y)])))
         }
         
-    } else { ## If it is not linear approximation
+    } else { ## If it is not a linear approximation
         if (absolutearea)
             myfunction <- function(z) { abs(splinefun(x, y, method="natural")(z)) }
         else
             myfunction <- splinefun(x, y, method="natural")
 
-        res <- integrate(myfunction, lower=from, upper=to)$value
+
+        res <- integrate(myfunction, lower=from, upper=to, subdivisions=subdivisions)$value
     }
 
     res
