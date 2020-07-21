@@ -74,7 +74,7 @@ cmd <- function(x, y) {
 
 #' Apply cumsum to each column of matrix
 #' 
-#' Fast computation of apply(x,2,cumsum)
+#' Fast computation of apply(m, 2, cumsum)
 #'
 #' @param m A matrix
 #' @return A matrix the same size as m with the column-wise cumulative sums.
@@ -96,8 +96,9 @@ colCumSum <- function(m) {
 #' Missing values (NA, Inf, NaN) are completely disregarded and pairwise complete cases are used f
 #' 
 #' @param x A matrix of regressor variables. Must have the same number of rows as the length of y.
-#' @param cutoff The value of the threshold that the cumulative group sum must not cross. 
-#' @param maxgroupsize An integer that defines the maximum number of elements in each group. NULL (the default) corresponds to no group size.
+#' @param threshold The value of the threshold that the cumulative group sum must not cross OR the threshold that each group sum must pass (when the argument cuwhatpassed is set to TRUE). 
+#' @param cutwhenpassed A boolean. Should the threshold be the upper limit of the group sum (the default) or the value that each group sum needs to pass (when set to TRUE).
+#' @param maxgroupsize An integer that defines the maximum number of elements in each group. NAs count as part of each group but do not add to the group sum. NULL (the default) corresponds to no group size limits.
 #' @return An integer vector giving the group indices
 #' @author Claus Ekstrom <claus@@rprimer.dk>
 #' @examples
@@ -107,9 +108,37 @@ colCumSum <- function(m) {
 #' cumsumbinning(x, 15)
 #' cumsumbinning(x, 15, 3)
 #' 
+#' x <- c(3, 4, 5, 12, 1, 5, 3)
+#' cumsumbinning(x, 10)
+#' cumsumbinning(x, 10, cutwhenpassed=TRUE)
+#'
 #' @export
-cumsumbinning <- function(x, cutoff, maxgroupsize = NULL) {
-    .Call(`_MESS_cumsumbinning`, x, cutoff, maxgroupsize)
+cumsumbinning <- function(x, threshold, cutwhenpassed = FALSE, maxgroupsize = NULL) {
+    .Call(`_MESS_cumsumbinning`, x, threshold, cutwhenpassed, maxgroupsize)
+}
+
+#' Fast distance covariance matrix
+#'
+#' @description Fast computation of the distance covariance between two matrices with the same number of rows.
+#' @param x A matrix with dimensions n*k.
+#' @param y A matrix with dimensions n*l.
+#' @return A number representing the distance covariance between x and y
+#' @author Claus Ekstrom <claus@@rprimer.dk>
+#' @export
+dCov <- function(x, y) {
+    .Call(`_MESS_dCov`, x, y)
+}
+
+#' Fast distance correlation matrix
+#'
+#' @description Fast computation of the distance correation matrix between two matrices with the same number of rows. Note that this is not the same as the correlation matrix distance that can be computed with the cmd function.
+#' @param x A matrix with dimensions n*k.
+#' @param y A matrix with dimensions n*l.
+#' @return A number between 0 and 1 representing the distance covariance between x and y
+#' @author Claus Ekstrom <claus@@rprimer.dk>
+#' @export
+dCor <- function(x, y) {
+    .Call(`_MESS_dCor`, x, y)
 }
 
 #' Fill down NA with the last observed observation
@@ -127,6 +156,26 @@ cumsumbinning <- function(x, cutoff, maxgroupsize = NULL) {
 #' @export
 filldown <- function(x) {
     .Call(`_MESS_filldown`, x)
+}
+
+#' Fast estimation of allele and genotype frequencies under Hardy-Weinberg equilibrium
+#' 
+#' Alleles are assumed to be numerated from 1 and up with no missing label. Thus if the largest value in either allele1 or allele2 is K then we assume that there can be at least K possible alleles.
+#' Genotypes are sorted such the the smallest allele comes first, i.e., 2x1 -> 1x2, and 2x3 -> 2x3
+#' 
+#' @param allele1 An integer vector (starting with values 1 upwards) of first alleles
+#' @param allele2 An integer vector (starting with values 1 upwards) of second alleles
+#' @param min_alleles A minimum number of unique alleles available
+#' @return A list with three variables: allele_freq for estimated allele frequencies, genotype_freq for estimated genotype_frequencies (under HWE assumption), obs_genotype is the frequency of the genotypes, available_genotypes is the number of available genotypes used for the estimation, and unique_alleles is the number of unique alleles (matches the length of allele_freq)
+#' @author Claus Ekstrom <claus@@rprimer.dk>
+#' @examples
+#' al1 <- sample(1:5, size=1000, replace=TRUE, prob=c(.4, .2, .2, .1, .1))
+#' al2 <- sample(1:5, size=1000, replace=TRUE, prob=c(.4, .2, .2, .1, .1))
+#' hwe_frequencies(al1, al2)
+#'
+#' @export
+hwe_frequencies <- function(allele1, allele2, min_alleles = 0L) {
+    .Call(`_MESS_hwe_frequencies`, allele1, allele2, min_alleles)
 }
 
 #' Kolmogorov-Smirnov goodness of fit test for cumulative discrete data
@@ -148,6 +197,25 @@ filldown <- function(x) {
 #' @export
 ks_cumtest <- function(x, B = 10000L, prob = NULL) {
     .Call(`_MESS_ks_cumtest`, x, B, prob)
+}
+
+#' Fast computation of maximum sum subarray
+#'
+#' @description Fast computation of the maximum subarray sum of a vector using Kadane's algorithm. The implementation handles purely negative numbers.
+#' @param x A vector
+#' @return A list with three elements: sum (the maximum subarray sum), start (the starting index of the subarray) and end (the ending index of the subarray)
+#' @author Claus Ekstrom <claus@@rprimer.dk>
+#' @examples
+#'
+#' maximum_subarray(1:4)
+#' 
+#' maximum_subarray(c(-2, 1, -3, 4, -1, 2, 1, -5, 4))
+#'  
+#' maximum_subarray(rnorm(100000))
+#'
+#' @export
+maximum_subarray <- function(x) {
+    .Call(`_MESS_maximum_subarray`, x)
 }
 
 #' Fast marginal simple regresion analyses

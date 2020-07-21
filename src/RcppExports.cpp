@@ -59,26 +59,51 @@ BEGIN_RCPP
 END_RCPP
 }
 // colCumSum
-NumericMatrix colCumSum(const NumericMatrix& m);
+NumericMatrix colCumSum(NumericMatrix m);
 RcppExport SEXP _MESS_colCumSum(SEXP mSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type m(mSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type m(mSEXP);
     rcpp_result_gen = Rcpp::wrap(colCumSum(m));
     return rcpp_result_gen;
 END_RCPP
 }
 // cumsumbinning
-IntegerVector cumsumbinning(NumericVector x, double cutoff, Rcpp::Nullable<int> maxgroupsize);
-RcppExport SEXP _MESS_cumsumbinning(SEXP xSEXP, SEXP cutoffSEXP, SEXP maxgroupsizeSEXP) {
+IntegerVector cumsumbinning(NumericVector x, double threshold, bool cutwhenpassed, Rcpp::Nullable<int> maxgroupsize);
+RcppExport SEXP _MESS_cumsumbinning(SEXP xSEXP, SEXP thresholdSEXP, SEXP cutwhenpassedSEXP, SEXP maxgroupsizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< double >::type cutoff(cutoffSEXP);
+    Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
+    Rcpp::traits::input_parameter< bool >::type cutwhenpassed(cutwhenpassedSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<int> >::type maxgroupsize(maxgroupsizeSEXP);
-    rcpp_result_gen = Rcpp::wrap(cumsumbinning(x, cutoff, maxgroupsize));
+    rcpp_result_gen = Rcpp::wrap(cumsumbinning(x, threshold, cutwhenpassed, maxgroupsize));
+    return rcpp_result_gen;
+END_RCPP
+}
+// dCov
+double dCov(NumericMatrix x, NumericMatrix y);
+RcppExport SEXP _MESS_dCov(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(dCov(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// dCor
+double dCor(NumericMatrix x, NumericMatrix y);
+RcppExport SEXP _MESS_dCor(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(dCor(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -93,6 +118,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// hwe_frequencies
+List hwe_frequencies(IntegerVector allele1, IntegerVector allele2, int min_alleles);
+RcppExport SEXP _MESS_hwe_frequencies(SEXP allele1SEXP, SEXP allele2SEXP, SEXP min_allelesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type allele1(allele1SEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type allele2(allele2SEXP);
+    Rcpp::traits::input_parameter< int >::type min_alleles(min_allelesSEXP);
+    rcpp_result_gen = Rcpp::wrap(hwe_frequencies(allele1, allele2, min_alleles));
+    return rcpp_result_gen;
+END_RCPP
+}
 // ks_cumtest
 List ks_cumtest(NumericVector x, int B, Rcpp::Nullable<Rcpp::NumericVector> prob);
 RcppExport SEXP _MESS_ks_cumtest(SEXP xSEXP, SEXP BSEXP, SEXP probSEXP) {
@@ -103,6 +141,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type B(BSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericVector> >::type prob(probSEXP);
     rcpp_result_gen = Rcpp::wrap(ks_cumtest(x, B, prob));
+    return rcpp_result_gen;
+END_RCPP
+}
+// maximum_subarray
+List maximum_subarray(const arma::vec& x);
+RcppExport SEXP _MESS_maximum_subarray(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(maximum_subarray(x));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -200,9 +249,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MESS_chisq_test_cpp", (DL_FUNC) &_MESS_chisq_test_cpp, 4},
     {"_MESS_cmd", (DL_FUNC) &_MESS_cmd, 2},
     {"_MESS_colCumSum", (DL_FUNC) &_MESS_colCumSum, 1},
-    {"_MESS_cumsumbinning", (DL_FUNC) &_MESS_cumsumbinning, 3},
+    {"_MESS_cumsumbinning", (DL_FUNC) &_MESS_cumsumbinning, 4},
+    {"_MESS_dCov", (DL_FUNC) &_MESS_dCov, 2},
+    {"_MESS_dCor", (DL_FUNC) &_MESS_dCor, 2},
     {"_MESS_filldown", (DL_FUNC) &_MESS_filldown, 1},
+    {"_MESS_hwe_frequencies", (DL_FUNC) &_MESS_hwe_frequencies, 3},
     {"_MESS_ks_cumtest", (DL_FUNC) &_MESS_ks_cumtest, 3},
+    {"_MESS_maximum_subarray", (DL_FUNC) &_MESS_maximum_subarray, 1},
     {"_MESS_mfastLmCpp", (DL_FUNC) &_MESS_mfastLmCpp, 3},
     {"_MESS_pairwise_Schur_product", (DL_FUNC) &_MESS_pairwise_Schur_product, 2},
     {"_MESS_pairwise_combination_indices", (DL_FUNC) &_MESS_pairwise_combination_indices, 2},

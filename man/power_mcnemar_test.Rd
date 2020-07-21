@@ -4,9 +4,15 @@
 \alias{power_mcnemar_test}
 \title{Power Calculations for Exact and Asymptotic McNemar Test in a 2 by 2 table}
 \usage{
-power_mcnemar_test(n = NULL, paid = NULL, psi = NULL,
-  sig.level = 0.05, power = NULL, alternative = c("two.sided",
-  "one.sided"), method = c("normal", "exact", "cond.exact"))
+power_mcnemar_test(
+  n = NULL,
+  paid = NULL,
+  psi = NULL,
+  sig.level = 0.05,
+  power = NULL,
+  alternative = c("two.sided", "one.sided"),
+  method = c("normal", "exact", "cond.exact")
+)
 }
 \arguments{
 \item{n}{Number of observations (number of pairs)}
@@ -22,7 +28,7 @@ corresponding control patient was exposed (specifying p_12 in the 2 x 2 table). 
 
 \item{alternative}{One- or two-sided test}
 
-\item{method}{Power calculations based on exact or asymptotic test. The default (normal) corresponds to an approximative test, "exact" is the unconditional exact test, while "cond.exact" is a conditional exact test (given fixed n).}
+\item{method}{Power calculations based on exact or asymptotic test. The default (normal) corresponds to an approximative test, "exact" is the unconditional exact test, while "cond.exact" is a conditional exact test (given fixed n). The "exact" method is very slow for large values of n so it is most useful for fixed (and moderately-sized) n.}
 }
 \value{
 Object of class \code{power.htest}, a list of the arguments
