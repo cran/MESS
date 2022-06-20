@@ -37,8 +37,8 @@
 #' power_t_test(delta=300, sd=450, power=.8, ratio=4)
 #'
 #' # Equal group sizes but different sd's
-#' # The sd in the first group is twice the sd in the second group
-#' power_t_test(delta=300, sd=450, power=.8, sd.ratio=.5)
+#' # The sd in the second group is twice the sd in the second group
+#' power_t_test(delta=300, sd=450, power=.8, sd.ratio=2)
 #'
 #' # Fixed group one size to 50 individuals, but looking for the number of individuals in the
 #' # second group. Different sd's with twice the sd in the larger group
@@ -60,7 +60,7 @@ power_t_test <-
 
     if (!is.null(ratio) && ratio < 1)
       stop("ratio between group sizes cannot be less than 1")
-    if (!is.null(sd.ratio) && sd.ratio < 0)
+    if (!is.null(sd.ratio) && sd.ratio < 1)
       stop("sd.ratio between group sd's cannot be less than 1")
   }
   else {
