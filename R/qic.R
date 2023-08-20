@@ -25,7 +25,7 @@
 #' @param \dots optionally more fitted geeglm model objects
 #' @return A vector or matrix with the QIC, QICu, quasi likelihood, CIC, the
 #' number of mean effect parameters, and the corrected QIC for each GEE object
-#' @author Claus Ekstrom \email{claus@@rprimer.dk}
+#' @author Claus Ekstrom \email{claus@@rprimer.dk}, Brian McLoone \email{bmcloone@pdx.edu}, and Steven Orzack \email{orzack@freshpond.org}
 #' @seealso \code{geeglm}
 #' @references Pan, W. (2001). \emph{Akaike's information criterion in
 #' generalized estimating equations}. Biometrics, 57, 120-125.\cr Hardin, J.W.
@@ -97,7 +97,7 @@ QIC.geeglm <- function(object, tol=.Machine$double.eps, ...) {
     # QIC
     QIC <- -2*(quasi - trace)
     QICu <- -2*(quasi - params)
-    QICC <- QIC + (2*kpm*(kpm+1))/(length(object$residuals)-kpm-1)
+    QICC <- QIC + (2*kpm*(kpm+1))/(length(unique(object$id))-kpm-1)
     output <- c(QIC, QICu, quasi, trace, params, QICC)
     names(output) <- c("QIC", "QICu", "Quasi Lik", "CIC", "params", "QICC")
     output
